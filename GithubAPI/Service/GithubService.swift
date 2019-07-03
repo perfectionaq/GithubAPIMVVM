@@ -13,13 +13,66 @@ class GithubService {
   private let session = URLSession.shared
   private let baseAPIURL = "https://api.github.com"
   
+  private let disposeBag = DisposeBag()
+  
   private init(){}
   public static let shared = GithubService()
   
-  func getGithubUsers() -> Observable<Data> {
-    return session.rx
-      .data(request: URLRequest(url: getAllUsersURL(page: 1, numberOfResultsPerPage: 20)))
-      .asObservable()
+  func getGithubUsers() -> Observable<User> {
+    return Observable.create { observer in
+      URLSession.shared.rx.data(request: URLRequest(url: self.getAllUsersURL(page: 1, numberOfResultsPerPage: 50)))
+        .subscribe(onNext: { (data) in
+          let jsonDecoder = JSONDecoder()
+          do {
+            let users = try jsonDecoder.decode([User].self, from: data)
+            for user in users {
+              observer.onNext(user)
+            }
+          } catch let e {
+            observer.onError(e)
+          }
+        }, onError: { (error) in
+          observer.onError(error)
+        }, onCompleted: {
+          observer.onCompleted()
+        })
+        .disposed(by: self.disposeBag)
+      
+      return Disposables.create()
+    }
+  }
+  
+  func getUsersFromData(_ data: Data) -> Observable<[User]>? {
+    var observable: Observable<[User]>? = nil
+    
+    let jsonDecoder = JSONDecoder()
+    do {
+      let users = try jsonDecoder.decode([User].self, from: data)
+      observable = Observable<[User]>.just(users)
+    } catch let e {
+      print(e)
+    }
+    
+    return observable
+  }
+  
+  func getGithubUser(_ username: String) -> Observable<User> {
+    let url = getUserRequestURL(username)
+    return Observable.create { observer in
+      URLSession.shared.rx.data(request: URLRequest(url: url))
+        .subscribe(onNext: { (data) in
+            let jsonDecoder = JSONDecoder()
+            do {
+              let user = try jsonDecoder.decode(User.self, from: data)
+              observer.onNext(user)
+            } catch let error {
+              print(error)
+            }
+        })
+        .disposed(by: self.disposeBag)
+      
+      return Disposables.create()
+    }
   }
   
   private func getAllUsersURL(page: Int, numberOfResultsPerPage: Int) -> URL {
@@ -31,6 +84,14 @@ class GithubService {
     
     
     return allUsersURLComponents.url!
+  }
+  
+  private func getUserRequestURL(_ username: String) -> URL {
+    var userRequestURLComponents = URLComponents(string: self.baseAPIURL)!
+    
+    userRequestURLComponents.path = UserEndPoint.allUsers.rawValue + "/\(username)"
+    
+    return userRequestURLComponents.url!
   }
   
   

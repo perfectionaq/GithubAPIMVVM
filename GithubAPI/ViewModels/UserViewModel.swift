@@ -35,6 +35,14 @@ class UserViewModel {
     return _userAvatar
   }
   
+  var numberOfFollowers: Int? {
+    return user.numberOfFollowers ?? 0
+  }
+  
+  var numberOfPublicRepositories: Int? {
+    return user.numberOfPublicRespositories ?? 0
+  }
+  
   func fetchUserAvatar() {
     if let cachedImage = ImageCache.shared.getUserAvatarImageFromCache(user.avatarURL) {
       print("cached")

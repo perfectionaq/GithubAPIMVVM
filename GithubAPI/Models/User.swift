@@ -13,11 +13,15 @@ struct User: Codable {
   var id: Int
   var repositoriesURL: String
   var avatarURL: String
+  var numberOfFollowers: Int?
+  var numberOfPublicRespositories: Int?
   
   enum CodingKeys: String, CodingKey {
     case username = "login"
     case repositoriesURL = "repos_url"
     case avatarURL = "avatar_url"
+    case numberOfFollowers = "followers"
+    case numberOfPublicRespositories = "public_repos"
     case id
   }
 
