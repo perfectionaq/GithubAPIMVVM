@@ -25,6 +25,7 @@ class UserRepositoriesViewController: UIViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
     
+    self.title = userViewModel.username
     
     self.userAvatarImageView.layer.masksToBounds = true
     self.userAvatarImageView.layer.cornerRadius = self.userAvatarImageView.frame.height / 2

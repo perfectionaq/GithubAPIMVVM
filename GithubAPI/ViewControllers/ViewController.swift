@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class ViewController: UIViewController {
+class UsersViewController: UIViewController {
   
   var usersViewModel = UsersViewModel()
   
@@ -62,7 +62,7 @@ class ViewController: UIViewController {
   }
 }
 
-extension ViewController: UITableViewDataSource, UITableViewDelegate {
+extension UsersViewController: UITableViewDataSource, UITableViewDelegate {
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
     return usersViewModel.usersCount
   }
@@ -78,7 +78,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
   }
 }
 
-extension ViewController {
+extension UsersViewController {
   override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
     if let destinationViewController = segue.destination as? UserRepositoriesViewController {
       if let indexPath = self.usersTableView.indexPathForSelectedRow {

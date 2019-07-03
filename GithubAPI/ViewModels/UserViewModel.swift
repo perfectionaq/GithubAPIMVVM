@@ -49,7 +49,6 @@ class UserViewModel {
   
   func fetchUserAvatar() {
     if let cachedImage = ImageCache.shared.getUserAvatarImageFromCache(user.avatarURL) {
-      print("cached")
       _userAvatar.accept(cachedImage)
       return
     }
