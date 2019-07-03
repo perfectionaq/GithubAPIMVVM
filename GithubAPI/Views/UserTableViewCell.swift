@@ -31,7 +31,7 @@ class UserTableViewCell: UITableViewCell {
     self.userAvatarImageView.layer.cornerRadius = self.userAvatarImageView.frame.height / 2
     self.userAvatarImageView.clipsToBounds = true
     
-    self.userAvatarImageView.image = UIImage(named: "github")
+    self.userAvatarImageView.image = nil
   }
   
   func configure(viewModel: UserViewModel) {

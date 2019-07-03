@@ -98,12 +98,44 @@ class GithubService {
     return userRequestURLComponents.url!
   }
   
+  private func getUserReposURL(_ username: String) -> URL {
+    var userReposURLComponents = URLComponents(string: self.baseAPIURL)!
+    
+    userReposURLComponents.path = UserEndPoint.allUsers.rawValue + "/\(username)/repos"
+    
+    return userReposURLComponents.url!
+  }
+  
   
   func downloadUserImage(_ imageURLString: String) -> Observable<Data> {
     let imageURL = URL(string: imageURLString)!
     let imageURLRequest = URLRequest(url: imageURL)
     
     return session.rx.data(request: imageURLRequest).asObservable()
+  }
+  
+  func getReposOfUser(_ username: String) -> Observable<[Repository]> {
+    let url = getUserReposURL(username)
+    
+    return Observable.create { observer in
+      URLSession.shared.rx.data(request: URLRequest(url: url))
+        .subscribe(onNext: { (data) in
+          let jsonDecoder = JSONDecoder()
+          do {
+            let repos = try jsonDecoder.decode([Repository].self, from: data)
+            observer.onNext(repos)
+          } catch let e {
+            observer.onError(e)
+          }
+        }, onError: { (error) in
+          observer.onError(error)
+        }, onCompleted: {
+          observer.onCompleted()
+        })
+        .disposed(by: self.disposeBag)
+      
+      return Disposables.create()
+    }
   }
 }
 

@@ -13,6 +13,7 @@ import RxCocoa
 class ViewController: UIViewController {
   
   var usersViewModel = UsersViewModel()
+  
   let disposeBag = DisposeBag()
   
   @IBOutlet weak var loadingIndicator: UIActivityIndicatorView!
@@ -52,6 +53,11 @@ class ViewController: UIViewController {
         self.usersTableView.reloadData()
       }).disposed(by: disposeBag)
     
+    usersTableView.rx.itemSelected.subscribe(onNext: { (indexPath) in
+      self.performSegue(withIdentifier: "userDetailsSegue", sender: self)
+    })
+    .disposed(by: disposeBag)
+    
     usersViewModel.getUsers()
   }
 }
@@ -69,6 +75,16 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     return userCell
+  }
+}
+
+extension ViewController {
+  override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+    if let destinationViewController = segue.destination as? UserRepositoriesViewController {
+      if let indexPath = self.usersTableView.indexPathForSelectedRow {
+        destinationViewController.userViewModel = self.usersViewModel.getUserViewModel(at: indexPath.row)
+      }
+    }
   }
 }
 
