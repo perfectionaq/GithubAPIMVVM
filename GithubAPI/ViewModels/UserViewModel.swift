@@ -16,11 +16,15 @@ class UserViewModel {
   private var user: User
   
   private var _userAvatar = BehaviorRelay<UIImage?>(value: nil)
+  private var _followersCount = BehaviorRelay<String>(value: "0")
+  private var _reposCount = BehaviorRelay<String>(value: "0")
   private var disposeBag = DisposeBag()
   
   
   init(user: User) {
     self.user = user
+    _followersCount.accept("\(user.numberOfFollowers!)")
+    _reposCount.accept("\(user.numberOfPublicRespositories!)")
   }
   
   var username: String {
@@ -35,12 +39,12 @@ class UserViewModel {
     return _userAvatar
   }
   
-  var numberOfFollowers: Int? {
-    return user.numberOfFollowers ?? 0
+  var numberOfFollowers: Driver<String> {
+    return _followersCount.asDriver()
   }
   
-  var numberOfPublicRepositories: Int? {
-    return user.numberOfPublicRespositories ?? 0
+  var numberOfPublicRepositories: Driver<String> {
+    return _reposCount.asDriver()
   }
   
   func fetchUserAvatar() {

@@ -19,12 +19,16 @@ class GithubService {
   public static let shared = GithubService()
   
   func getGithubUsers() -> Observable<User> {
+    
     return Observable.create { observer in
-      URLSession.shared.rx.data(request: URLRequest(url: self.getAllUsersURL(page: 1, numberOfResultsPerPage: 50)))
+      URLSession.shared.rx.data(request: URLRequest(url: self.getAllUsersURL(page: 1, numberOfResultsPerPage: 5)))
         .subscribe(onNext: { (data) in
+          
           let jsonDecoder = JSONDecoder()
+          
           do {
             let users = try jsonDecoder.decode([User].self, from: data)
+            
             for user in users {
               observer.onNext(user)
             }

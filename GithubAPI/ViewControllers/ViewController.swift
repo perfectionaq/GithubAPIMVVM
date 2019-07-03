@@ -64,6 +64,7 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate {
   func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let userCell = usersTableView.dequeueReusableCell(withIdentifier: "userCell", for: indexPath) as! UserTableViewCell
     if let viewModel = usersViewModel.getUserViewModel(at: indexPath.row) {
+      userCell.configureView()
       userCell.configure(viewModel: viewModel)
     }
     
